@@ -44,3 +44,38 @@ gender[gender=="Value"]="Both"
 list_choices <- append("World",unique(global.n.sex$Region)[!is.na(unique(global.n.sex$Region))])
 names(list_choices) <- paste(append("World",unique(global.n.sex$Region)[!is.na(unique(global.n.sex$Region))]),"",sep="")
 
+
+# Define UI for application that draws a histogram
+ui <- navbarPage("Shiny app",
+                 theme = shinytheme("paper"),
+                 
+                 tabPanel("data",
+                          fluidPage(
+                            
+                            column(12,align="center",
+                                   titlePanel(h3("Age-standardized prevalence of tobacco smoking among persons 15 years and older (%),by WHO region, 2016"))),
+                            
+                            DT::dataTableOutput("tabplot")
+                            
+                            
+                          ) # fluidPage
+                 )# tabpanel
+) # navbarPage
+
+server <- function(input, output, session) {
+  
+  output$tabplot=DT::renderDataTable({
+    DT::datatable(global.n.sex %>% select(Country, Value, Male, Female, 
+                                          Region,Value.Regional),
+                  filter="top",options = list(
+                    pageLength=5,width = 10,height = 20
+                  )
+    )
+  })
+}
+
+# Run the application 
+shinyApp(ui = ui, server = server)
+
+
+
