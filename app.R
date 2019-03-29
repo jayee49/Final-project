@@ -86,7 +86,23 @@ ui <- navbarPage("Shiny app",
                               plotOutput(outputId = "boxplot")
                             ) # mainPanel
                           ) # sidebarLayout
-                 ) # tabPanel
+                 ), # tabPanel
+                 
+                 #### Adding one more panel for Map
+                 tabPanel("World Map",
+                          sidebarLayout(
+                            sidebarPanel(
+                              selectInput("map_opt",label = h3("Gender"),
+                                          choices = c("Both","Male","Female"),
+                                          selected = 1) #selectInput
+                            ), #sidebarPanel
+                            mainPanel(
+                              plotOutput(outputId ="worldmap",
+                                         hover = "map2"),
+                              verbatimTextOutput("infof")
+                            ) #mainPanel
+                          )# siderbarLayout
+                 )# tabpanel
 ) # navbarPage
 
 
@@ -171,6 +187,41 @@ server <- function(input, output, session) {
 
     }
   });
+  
+
+  
+  updateSelectInput(session, "map_opt",
+                    choices = c("Both", "Male","Female"),
+                    selected = head(c("Both", " Male"," Female"), 1)
+  );
+  
+  output$worldmap <- renderPlot({
+    
+    if(input$map_opt == "Both"){
+      joinCountryData2Map(global.n.sex,joinCode = "NAME",
+                          nameJoinColumn = "Country") %>% 
+        mapCountryData(nameColumnToPlot = "Both.sexes",
+                       mapTitle = "Rate of Aged 15+ Currently Smoke for Both Gender")
+      
+    } # Both if
+    
+    if(input$map_opt == "Male"){
+      joinCountryData2Map(global.n.sex,joinCode = "NAME",
+                          nameJoinColumn = "Country") %>% 
+        mapCountryData(nameColumnToPlot = "Male",
+                       mapTitle = "Rate of Aged 15+ Currently Smoke for Male")
+      
+    } # Male if
+    
+    if(input$map_opt == "Female"){
+      joinCountryData2Map(global.n.sex,joinCode = "NAME",
+                          nameJoinColumn = "Country") %>% 
+        mapCountryData(nameColumnToPlot = "Female",
+                       mapTitle = "Rate of Aged 15+ Currently Smoke for Female")
+      
+    } # Female if
+  }
+  ); #renderplot
   
   
   
