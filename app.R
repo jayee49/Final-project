@@ -67,9 +67,11 @@ ui <- navbarPage("Shiny app",
                             column(11,align="center",
                                    tableOutput("info")),
                             column(11,align="center",
-                                   tableOutput("brush_info"))
+                                   tableOutput("brush_info")),
+                            
+                            plotOutput(outputId="barplot")
                           ) # fluidPage
-                 ),# tabpanel
+                       ),# tabpanel
                  
                  tabPanel("gender differences",
                           
@@ -86,8 +88,10 @@ ui <- navbarPage("Shiny app",
                           ) # sidebarLayout
                  ), # tabPanel
                  
-                 tabPanel("World Map",
+
                           
+                 #### Adding one more panel for Map
+                 tabPanel("World Map",
                           sidebarLayout(
                             sidebarPanel(
                               selectInput("map_opt",label = h3("Gender"),
@@ -95,7 +99,10 @@ ui <- navbarPage("Shiny app",
                                           selected = 1) #selectInput
                             ), #sidebarPanel
                             mainPanel(
-                              plotlyOutput(outputId ="worldmap" )
+                              plotlyOutput(outputId ="worldmap"),
+                              plotOutput(outputId ="worldmap",
+                                         hover = "map2"),
+                              verbatimTextOutput("infof")
                             ) #mainPanel
                           )# siderbarLayout
                  )# tabpanel
@@ -128,6 +135,33 @@ server <- function(input, output, session) {
                input$plot_click, threshold = 10, maxpoints = 1,
                addDist = F)
   },width = 800);
+  
+  ######################
+  #### Adding barplot
+  ######################
+  
+  output$barplot <- renderPlot({
+    if(is.null(input$plot_click)) 
+      return(NULL)
+    if(is.na(nearPoints(global.n.sex %>% select(Country, Region, Value, Value.Regional), 
+                        input$plot_click, threshold = 10, maxpoints = 1)$Country))
+      return(NULL)
+    
+    else{
+      ggplot(global.n.sex %>% filter(Region == nearPoints(global.n.sex %>% select(Country, Region, Value, Value.Regional), 
+                                                          input$plot_click, threshold = 10, maxpoints = 1)$Region), 
+             aes(x=Country, y=Value, fill=Region)) +
+        scale_color_manual(values=col,aesthetics = c("fill"))+
+        
+        geom_bar(stat = "identity") +
+        theme(axis.text.x = element_text(angle = 90)) +
+        geom_hline(aes(yintercept=mean(Value)),linetype=5,col="grey") # change 2+
+      
+    } #else
+    
+  });#renderplot
+  
+  
   
   output$brush_info <- renderTable({
     brushedPoints(global.n.sex 
