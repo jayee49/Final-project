@@ -84,7 +84,21 @@ ui <- navbarPage("Shiny app",
                               plotOutput(outputId = "boxplot")
                             ) # mainPanel
                           ) # sidebarLayout
-                 ) # tabPanel
+                 ), # tabPanel
+                 
+                 tabPanel("World Map",
+                          
+                          sidebarLayout(
+                            sidebarPanel(
+                              selectInput("map_opt",label = h3("Gender"),
+                                          choices = c("Both","Male","Female"),
+                                          selected = 1) #selectInput
+                            ), #sidebarPanel
+                            mainPanel(
+                              plotlyOutput(outputId ="worldmap" )
+                            ) #mainPanel
+                          )# siderbarLayout
+                 )# tabpanel
 ) # navbarPage
 
 
