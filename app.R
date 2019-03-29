@@ -117,6 +117,33 @@ server <- function(input, output, session) {
                addDist = F)
   },width = 800);
   
+  ######################
+  #### Adding barplot
+  ######################
+  
+  output$barplot <- renderPlot({
+    if(is.null(input$plot_click)) 
+      return(NULL)
+    if(is.na(nearPoints(global.n.sex %>% select(Country, Region, Value, Value.Regional), 
+                        input$plot_click, threshold = 10, maxpoints = 1)$Country))
+      return(NULL)
+    
+    else{
+      ggplot(global.n.sex %>% filter(Region == nearPoints(global.n.sex %>% select(Country, Region, Value, Value.Regional), 
+                                                          input$plot_click, threshold = 10, maxpoints = 1)$Region), 
+             aes(x=Country, y=Value, fill=Region)) +
+        scale_color_manual(values=col,aesthetics = c("fill"))+
+        
+        geom_bar(stat = "identity") +
+        theme(axis.text.x = element_text(angle = 90)) +
+        geom_hline(aes(yintercept=mean(Value)),linetype=5,col="grey") # change 2+
+      
+    } #else
+    
+  });#renderplot
+  
+  
+  
   output$brush_info <- renderTable({
     brushedPoints(global.n.sex 
                   %>% select(Country, Region, Value, Male, Female, Value.Regional), 
@@ -145,26 +172,6 @@ server <- function(input, output, session) {
     }
   });
   
-  output$barplot <- renderPlot({
-    if(is.null(input$plot_click)) 
-      return(NULL)
-    if(is.na(nearPoints(global.n.sex %>% select(Country, Region, Value, Value.Regional), 
-                        input$plot_click, threshold = 10, maxpoints = 1)$Country))
-      return(NULL)
-    
-    else{
-      ggplot(global.n.sex %>% filter(Region == nearPoints(global.n.sex %>% select(Country, Region, Value, Value.Regional), 
-                                                          input$plot_click, threshold = 10, maxpoints = 1)$Region), 
-             aes(x=Country, y=Value, fill=Region)) +
-        scale_color_manual(values=col,aesthetics = c("fill"))+
-        
-        geom_bar(stat = "identity") +
-        theme(axis.text.x = element_text(angle = 90)) +
-        geom_hline(aes(yintercept=mean(Value)),linetype=5,col="grey") # change 2+
-      
-    }
-    
-  })
   
   
 }
