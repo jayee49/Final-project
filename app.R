@@ -191,6 +191,43 @@ server <- function(input, output, session) {
     }
   });
   
+
+  
+  updateSelectInput(session, "map_opt",
+                    choices = c("Both", "Male","Female"),
+                    selected = head(c("Both", " Male"," Female"), 1)
+  );
+  
+  output$worldmap <- renderPlot({
+    
+    if(input$map_opt == "Both"){
+      joinCountryData2Map(global.n.sex,joinCode = "NAME",
+                          nameJoinColumn = "Country") %>% 
+        mapCountryData(nameColumnToPlot = "Both.sexes",
+                       mapTitle = "Rate of Aged 15+ Currently Smoke for Both Gender")
+      
+    } # Both if
+    
+    if(input$map_opt == "Male"){
+      joinCountryData2Map(global.n.sex,joinCode = "NAME",
+                          nameJoinColumn = "Country") %>% 
+        mapCountryData(nameColumnToPlot = "Male",
+                       mapTitle = "Rate of Aged 15+ Currently Smoke for Male")
+      
+    } # Male if
+    
+    if(input$map_opt == "Female"){
+      joinCountryData2Map(global.n.sex,joinCode = "NAME",
+                          nameJoinColumn = "Country") %>% 
+        mapCountryData(nameColumnToPlot = "Female",
+                       mapTitle = "Rate of Aged 15+ Currently Smoke for Female")
+      
+    } # Female if
+  }
+  ) #renderplot
+  
+  
+  
 }
 
 # Run the application 
