@@ -60,9 +60,14 @@ ui <- navbarPage("Shiny app",
                             
                           ), # fluidPage
                           fluidPage(
-                            plotOutput(outputId = "plot"
-                                       )
-                            
+                            plotOutput(outputId = "plot",
+                                       click = "plot_click",
+                                       brush = "plot_brush"),
+
+                            column(11,align="center",
+                                   tableOutput("info")),
+                            column(11,align="center",
+                                   tableOutput("brush_info"))
                           ) # fluidPage
                  )# tabpanel
 ) # navbarPage
@@ -88,6 +93,18 @@ server <- function(input, output, session) {
       scale_color_manual(values=col,aesthetics = "colour")
   })
   
+  output$info <- renderTable({
+    nearPoints(global.n.sex 
+               %>% select(Country, Region, Value, Male, Female, Value.Regional), 
+               input$plot_click, threshold = 10, maxpoints = 1,
+               addDist = F)
+  },width = 800);
+  
+  output$brush_info <- renderTable({
+    brushedPoints(global.n.sex 
+                  %>% select(Country, Region, Value, Male, Female, Value.Regional), 
+                  input$plot_brush)
+  },width = 800);  
 }
 
 # Run the application 
