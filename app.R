@@ -58,20 +58,34 @@ ui <- navbarPage("Shiny app",
                             DT::dataTableOutput("tabplot")
                             
                             
+                          ) # fluidPage
+                 ),
+                 
+                 tabPanel("Visualization",
+                          fluidPage(
+                            
+                            column(12,align="center",
+                                   titlePanel(h3("Age-standardized prevalence of tobacco smoking among persons 15 years and older (%),by WHO region, 2016")))
+                            
+                            
                           ), # fluidPage
                           fluidPage(
-                            plotOutput(outputId = "plot",
+                            plotOutput(outputId = "plot", 
                                        click = "plot_click",
                                        brush = "plot_brush"),
-
+                            
+                            
                             column(11,align="center",
                                    tableOutput("info")),
                             column(11,align="center",
                                    tableOutput("brush_info")),
                             
                             plotOutput(outputId="barplot")
+                            
                           ) # fluidPage
-                       ),# tabpanel
+                 ),
+
+                          
                  
                  tabPanel("gender differences",
                           
