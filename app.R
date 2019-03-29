@@ -58,9 +58,18 @@ ui <- navbarPage("Shiny app",
                             DT::dataTableOutput("tabplot")
                             
                             
+                          ), # fluidPage
+                          fluidPage(
+                            plotOutput(outputId = "plot"
+                                       )
+                            
                           ) # fluidPage
                  )# tabpanel
 ) # navbarPage
+
+
+col_scale <- scale_colour_discrete(limits = unique(global.n.sex$Region))
+col=c("Europe"="#3366cc","Africa"="#dc3912","Americas"="#ff9900","Eastern Mediterranean"="#109618","South-East Asia"="#990099","Western Pacific"="#0099c6")
 
 server <- function(input, output, session) {
   
@@ -72,6 +81,13 @@ server <- function(input, output, session) {
                   )
     )
   })
+  
+  output$plot <- renderPlot({
+    ggplot(global.n.sex, aes(x=Value, y=Value.Regional, colour = Region)) + 
+      geom_point(size=3) +
+      scale_color_manual(values=col,aesthetics = "colour")
+  })
+  
 }
 
 # Run the application 
