@@ -69,7 +69,22 @@ ui <- navbarPage("Shiny app",
                             column(11,align="center",
                                    tableOutput("brush_info"))
                           ) # fluidPage
-                 )# tabpanel
+                 ),# tabpanel
+                 
+                 tabPanel("gender differences",
+                          
+                          sidebarLayout(
+                            sidebarPanel(
+                              selectInput("select", label = h3("Gender Selection"), 
+                                          choices = c("non-gender", "gender"),
+                                          selected = 1)
+                              
+                            ), # sidebarPanel
+                            mainPanel(
+                              plotOutput(outputId = "boxplot")
+                            ) # mainPanel
+                          ) # sidebarLayout
+                 ) # tabPanel
 ) # navbarPage
 
 
@@ -105,6 +120,29 @@ server <- function(input, output, session) {
                   %>% select(Country, Region, Value, Male, Female, Value.Regional), 
                   input$plot_brush)
   },width = 800);  
+  
+  updateSelectInput(session, "select",
+                    choices = c("non-gender", "gender"),
+                    selected = head(c("non-gender", "gender"), 1)
+  );
+  
+  output$boxplot <- renderPlot({
+    
+    if(input$select == "non-gender"){
+      
+        ggplot(global.n.sex, aes(x=Region, y=Value, fill=Region))  +
+          geom_boxplot() 
+    }
+    
+    else{
+      
+        ggplot(gender[-which(gender$gender=="Both"),], aes(x=gender, y=gender.value, fill=Region))  +
+          geom_boxplot() 
+      
+
+    }
+  });
+  
 }
 
 # Run the application 
